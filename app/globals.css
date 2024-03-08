@@ -19,7 +19,6 @@ body {
   background-color: rgb(var(--background-hex)); 
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 }
 
