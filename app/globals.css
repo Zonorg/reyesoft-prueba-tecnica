@@ -28,4 +28,12 @@ body {
   }
 }
 
-/* Pages*/ 
+.default-page-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  gap: 50px;
+  padding: 20px;
+}

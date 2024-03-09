@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 
 export default function Page() {
-  const router = useRouter(); 
+  const router = useRouter();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -11,12 +11,12 @@ export default function Page() {
   const [user, setUser] = useState<string | null>(null);
 
   useEffect(() => {
-    const isAuthenticated = true;
+    const userIsAuthenticated = localStorage.getItem("user") !== null;
 
-    if (isAuthenticated) {
+    if (userIsAuthenticated) {
       router.push("/systems");
     }
-  }, []); 
+  }, []);
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
@@ -46,6 +46,7 @@ export default function Page() {
         console.log("success", userData);
         setError(null);
         localStorage.setItem("user", JSON.stringify(userData));
+        location.reload();
       } else {
         const errorData = await response.json();
         setError(errorData.message);
@@ -60,7 +61,7 @@ export default function Page() {
   };
 
   return (
-    <div className="login_page">
+    <div className="default-page-container">
       <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
       <form className="max-w-md mx-auto my-8" onSubmit={handleSubmit}>
         <div className="mb-4">
