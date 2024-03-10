@@ -14,4 +14,4 @@ Por defecto se abre en [http://localhost:3000](http://localhost:3000).
 
 ## Deploy en Vercel
 
-[Vercel Platform](https://reyesoft-prueba-tecnica.vercel.app/) 
+[(https://reyesoft-prueba-tecnica.vercel.app/)]
