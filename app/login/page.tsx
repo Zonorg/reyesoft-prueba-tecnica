@@ -2,15 +2,19 @@
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 
-export default function Page() {
+export default function Login() {
   const router = useRouter();
 
+  // Para insertar los datos del formulario y mostrar también un error en caso de estar mal las credenciales
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+
   const [user, setUser] = useState<string | null>(null);
 
   useEffect(() => {
+
+    // Si el usuario tiene la sesión iniciada correctamente nos lleva a /systems
     const userIsAuthenticated = localStorage.getItem("user") !== null;
 
     if (userIsAuthenticated) {
@@ -53,7 +57,7 @@ export default function Page() {
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
-      setError("Error en la solicitud. Por favor, intenta de nuevo.");
+      setError("Error en la solicitud.");
       setUser(null);
     }
   };

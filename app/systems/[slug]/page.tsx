@@ -1,9 +1,11 @@
 "use client";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import React, { useEffect, useState, ChangeEvent } from "react";
 import Image from "next/image";
 
+// Definiciones para Typescript
 interface SystemData {
   meta: any[];
   data: {
@@ -17,34 +19,56 @@ interface SystemData {
   included: any[];
 }
 
-const IdDetails = (): React.ReactElement => {
+export default function idDetails(): React.ReactElement {
+  // Para obtener el id de la query, normalmente se usa useRouter pero tuve que optar por pathname
+  // Ya que mi proyecto se encuentra en app y Next no permite usar useRoute de ésta manera
   const pathname = usePathname();
   const id = pathname.split("/")[2];
+
+  const router = useRouter();
+  const [userName, setUserName] = useState<string | null>(null);
 
   const [systemData, setSystemData] = useState<SystemData | null>(null);
   const [equivalentValues, setEquivalentValues] = useState<
     { currency: string; value: string }[]
   >([]);
+
+  // Valor por defecto para cualquier moneda elegida en el selector, usdt en este caso usdt
   const [selectedCurrency, setSelectedCurrency] = useState<string | null>(
     "usdt"
   );
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `https://api.saldo.com.ar/v3/systems/${id}?include=rates`
-        );
-        const data: SystemData = await response.json();
-        setSystemData(data);
-      } catch (error) {
-        console.error("Error fetching system data", error);
-      }
-    };
+    const userIsAuthenticated = localStorage.getItem("user") !== null;
 
-    fetchData();
+    if (!userIsAuthenticated) {
+      router.push("/login");
+    } else {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        setUserName(user.name);
+      }
+
+        //Llamada a la api incluyendo los rates para poder hacer el calculo de divisas
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `https://api.saldo.com.ar/v3/systems/${id}?include=rates`
+          );
+          const data: SystemData = await response.json();
+          setSystemData(data);
+        } catch (error) {
+          console.error("Error fetching system data", error);
+        }
+      };
+
+      fetchData();
+    }
   }, [id]);
 
+  // Para hacer el calculo de divisas según = moneda elegida / rateAttributes.price
+  // Retorna el id y la cantidad a recibir de la divisa elegida y reemplaza los decimales por ","
   const calculateEquivalentValues = (sendingAmount: number) => {
     if (!systemData) return;
 
@@ -61,17 +85,19 @@ const IdDetails = (): React.ReactElement => {
     setEquivalentValues(values);
   };
 
+  // Selector de Divisas
+  const handleCurrencySelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    setSelectedCurrency(selected);
+  };
+
+  // Para renderizar el cambio de valores en el input y comprobar que no este vacío el dato si no da un NaN
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const sendingAmount = parseFloat(e.target.value);
 
     if (!isNaN(sendingAmount) && sendingAmount >= 0) {
       calculateEquivalentValues(sendingAmount);
     }
-  };
-
-  const handleCurrencySelect = (e: ChangeEvent<HTMLSelectElement>) => {
-    const selected = e.target.value;
-    setSelectedCurrency(selected);
   };
 
   return (
@@ -166,6 +192,4 @@ const IdDetails = (): React.ReactElement => {
       )}
     </div>
   );
-};
-
-export default IdDetails;
+}
