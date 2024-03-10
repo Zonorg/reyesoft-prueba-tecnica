@@ -10,6 +10,12 @@ Las rutas están todas sobre app ya que por defecto Next14 las enruta automátic
 
 Dentro de cada vista hay más documentación explicando un poco el código.
 
+Las credenciales para el inicio de sesión son:
+```
+email=admin@saldo.com.ar
+password=CoolSite
+```
+
 ## Getting Started
 
 Para correr el proyecto instalar las dependecias con:
