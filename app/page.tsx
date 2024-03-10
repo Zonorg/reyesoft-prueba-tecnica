@@ -10,8 +10,6 @@ export default function Home() {
 
     if (!userIsAuthenticated) {
       router.replace("/login");
-    } else {
-      router.replace("/systems");
     }
   }, []);
 

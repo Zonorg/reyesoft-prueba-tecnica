@@ -52,6 +52,11 @@ export default function Page(): React.ReactElement {
     }
   }, [router]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    window.location.reload();
+  };
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = systems.slice(indexOfFirstItem, indexOfLastItem);
@@ -64,34 +69,45 @@ export default function Page(): React.ReactElement {
   return (
     <div className="default_page_container">
       {userName && (
-        <div className="mb-4">
+        <div className="mb-4 flex justify-around items-center w-full">
           <p className="font-bold">{`Hola, ${userName}!`}</p>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700"
+          >
+            Cerrar Sesión
+          </button>
         </div>
       )}
       <h1 className="text-2xl font-bold mb-4">Lista de Activos Disponibles</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {currentItems.map((system) => (
-          <div
-            key={system.id}
-            className="bg-white rounded-md p-4 shadow-md transition duration-300 ease-in-out transform hover:scale-105"
-          >
-            <Link href={`/systems/${system.id}`}>
-              <h2 className="text-lg font-semibold mb-2">
-                {system.attributes.name}
-              </h2>
+        {currentItems
+          .filter(
+            (system) =>
+              system.attributes.can_send && system.attributes.can_receive
+          )
+          .map((system) => (
+            <div
+              key={system.id}
+              className="bg-white rounded-md p-4 shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              <Link href={`/systems/${system.id}`}>
+                <h2 className="text-lg font-semibold mb-2">
+                  {system.attributes.name}
+                </h2>
 
-              <p className="text-gray-500">
-                Currency: {system.attributes.currency}
-              </p>
-              <p className="text-gray-500">
-                Can Send: {system.attributes.can_send.toString()}
-              </p>
-              <p className="text-gray-500">
-                Can Receive: {system.attributes.can_receive.toString()}
-              </p>
-            </Link>
-          </div>
-        ))}
+                <p className="text-gray-500">
+                  Currency: {system.attributes.currency}
+                </p>
+                <p className="text-gray-500">
+                  Can Send: {system.attributes.can_send.toString()}
+                </p>
+                <p className="text-gray-500">
+                  Can Receive: {system.attributes.can_receive.toString()}
+                </p>
+              </Link>
+            </div>
+          ))}
       </div>
       <div className="mt-4 flex justify-center">
         {Array.from({ length: totalPages }, (_, index) => (

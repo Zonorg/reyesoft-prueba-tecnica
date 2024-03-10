@@ -1,52 +1,54 @@
 "use client";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { usePathname } from "next/navigation"; // al tener todo directamente en app uso este hook en vez de useRouter
 
 interface PriceDetails {
   ask: number;
   bid: number;
   currency: string;
-  bid_url: string;
-  ask_url: string;
 }
 
 interface Prices {
   [key: string]: PriceDetails;
 }
 
-const idDetails = (): React.ReactElement => {
-  // Uso window location porque UseRouter no puedo usarlo con las rutas directamente en app
-  const [, , id] = window.location.pathname.split("/");
-
+const IdDetails = (): React.ReactElement => {
+  const pathname = usePathname();
+  const id = pathname.split("/")[2];
   const [prices, setPrices] = useState<Prices | null>(null);
   const [amount, setAmount] = useState<number>(1);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const apiUrl = `https://api.saldo.com.ar/json/rates/${id}`;
-        const response = await fetch(apiUrl);
+    if (id) {
+      const fetchData = async () => {
+        try {
+          const apiUrl = `https://api.saldo.com.ar/json/rates/${id}`;
+          const response = await fetch(apiUrl);
 
-        if (response.ok) {
-          const data: Prices = await response.json();
-          setPrices(data);
-        } else {
-          console.error("Error al obtener los datos");
+          if (response.ok) {
+            const data: Prices = await response.json();
+            setPrices(data);
+          } else {
+            console.error("Error al obtener los datos");
+          }
+        } catch (error) {
+          console.error("Error en la solicitud:", error);
         }
-      } catch (error) {
-        console.error("Error en la solicitud:", error);
-      }
-    };
+      };
 
-    fetchData();
+      fetchData();
+    }
   }, [id]);
-
-  // Para calcular el valor en cada moneda
   const calculateValueInEachCurrency = (amount: number) => {
     if (!prices) return null;
-    const values: { [key: string]: number } = {};
+    const values: { [key: string]: { value: number; currency: string } } = {};
 
     Object.entries(prices).forEach(([pair, details]) => {
-      values[pair] = amount * details.bid;
+      values[pair] = {
+        value: amount / details.bid,
+        currency: details.currency,
+      };
     });
 
     return values;
@@ -54,21 +56,45 @@ const idDetails = (): React.ReactElement => {
 
   const renderValueInEachCurrency = () => {
     if (!prices || !id || prices[id]?.currency === null) return null;
+
     const values = calculateValueInEachCurrency(amount);
 
     return (
-      <div className="w-full bg-red-500">
-        <h2 className="text-lg font-semibold mb-2">
-          Valor de {amount} {prices[id]?.currency} en otras monedas
-        </h2>
+      <div className="w-full flex justify-center">
         <ul>
-          {Object.entries(values || {}).map(([pair, value]) => (
-            <li key={pair}>
-              <p>{`${value.toFixed(8)} ${pair}`}</p>
-            </li>
-          ))}
+          {values &&
+            Object.entries(values).map(([pair, { value, currency }]) => (
+              <li key={pair} className="mb-4">
+                <p className="bg-yellow-200 font-bold p-2 rounded-md w-60">{`${value.toFixed(
+                  8
+                )} ${pair} `}</p>
+              </li>
+            ))}
         </ul>
       </div>
+    );
+  };
+
+  const renderCurrencyDetails = () => {
+    if (!prices || !id) return null;
+
+    const currencyDetails = Object.entries(prices).map(([pair, details]) => ({
+      pair,
+      currency: details.currency,
+    }));
+
+    const uniqueCurrencies = Array.from(
+      new Set(currencyDetails.map((detail) => detail.currency))
+    );
+
+    return (
+      <ul className="list-disc pl-4 mb-4">
+        {uniqueCurrencies.map((currency) => (
+          <li key={currency}>
+            <p>Moneda: {currency}</p>
+          </li>
+        ))}
+      </ul>
     );
   };
 
@@ -76,36 +102,37 @@ const idDetails = (): React.ReactElement => {
     <div className="default_page_container">
       <h1 className="text-2xl font-bold mb-4">Detalles del Sistema</h1>
       {prices ? (
-        <div>
+        <>
           <h2 className="text-lg font-semibold mb-2">
             Precios en relación a otros pares
           </h2>
-          <ul className="list-disc pl-4 mb-4">
-            {Object.entries(prices).map(([pair, details]) => (
-              <li key={pair}>
-                <p>{pair}</p>
-
-                <h2 className="text-2xl">Currency: {details.currency}</h2>
-              </li>
-            ))}
-          </ul>
+          {renderCurrencyDetails()}
           <div className="">
             <label
               htmlFor="amountInput"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 mb-1 text-center"
             >
-              Ingresa el valor:
+              Cantidad:
             </label>
             <input
-              className="border rounded px-3 py-2 w-20"
-              type="number"
+              className="border rounded px-4 py-2 w-32 focus:outline-none focus:border-green-500 focus:ring focus:ring-green-200"
+              type="text"
               id="amountInput"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value))}
             />
           </div>
+          <p className="text-sm font-medium text-gray-700 mb-1">Cambio:</p>
           {renderValueInEachCurrency()}
-        </div>
+          <Link
+            href="/systems"
+            className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue"
+          >
+            Volver
+          </Link>
+        </>
       ) : (
         <p>Cargando precios...</p>
       )}
@@ -113,4 +140,4 @@ const idDetails = (): React.ReactElement => {
   );
 };
 
-export default idDetails;
+export default IdDetails;
