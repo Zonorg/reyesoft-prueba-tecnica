@@ -132,7 +132,7 @@ const IdDetails = (): React.ReactElement => {
             </select>
           </div>
 
-          <div className="flex mb-4 items-center">
+          <div className="flex flex-col sm:flex-row mb-4 items-center">
             <p className="text-sm font-bold text-gray-700">Recibirás:</p>
             {equivalentValues
               .filter(
