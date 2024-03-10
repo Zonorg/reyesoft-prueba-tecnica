@@ -43,14 +43,12 @@ export default function Page() {
       if (response.ok) {
         const userData = await response.json();
         setUser(userData.username);
-        console.log("success", userData);
         setError(null);
         localStorage.setItem("user", JSON.stringify(userData));
-        location.reload();
+        router.push("/systems");
       } else {
         const errorData = await response.json();
-        setError(errorData.message);
-        console.log("error");
+        setError(errorData.message || "Credenciales incorrectas");
         setUser(null);
       }
     } catch (error) {
@@ -59,7 +57,7 @@ export default function Page() {
       setUser(null);
     }
   };
-
+  
   return (
     <div className="default_page_container">
       <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
@@ -107,7 +105,7 @@ export default function Page() {
           </button>
         </div>
         <div className="mb-4">
-          {error && <p className="text-red-500">{error}</p>}
+          {error && <p className="text-red-500 text-center">{error}</p>}
         </div>
       </form>
     </div>

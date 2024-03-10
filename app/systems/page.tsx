@@ -2,6 +2,7 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface System {
   type: string;
@@ -9,14 +10,16 @@ interface System {
   attributes: {
     name: string;
     currency: string;
-    can_send: boolean;
-    can_receive: boolean;
   };
+}
+
+interface SystemWithImage extends System {
+  imageUrl: string;
 }
 
 export default function Page(): React.ReactElement {
   const router = useRouter();
-  const [systems, setSystems] = useState<System[]>([]);
+  const [systems, setSystems] = useState<SystemWithImage[]>([]);
 
   const [userName, setUserName] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -39,7 +42,15 @@ export default function Page(): React.ReactElement {
           const response = await fetch("https://api.saldo.com.ar/v3/systems");
           if (response.ok) {
             const data = await response.json();
-            setSystems(data.data);
+
+            const systemsDataWithImages: SystemWithImage[] = data.data.map(
+              (system: System) => ({
+                ...system,
+                imageUrl: `https://api.saldo.com.ar/img/sistemas2/${system.id}.big.webp`,
+              })
+            );
+
+            setSystems(systemsDataWithImages);
           } else {
             console.error("Error al obtener los datos");
           }
@@ -81,33 +92,30 @@ export default function Page(): React.ReactElement {
       )}
       <h1 className="text-2xl font-bold mb-4">Lista de Activos Disponibles</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {currentItems
-          .filter(
-            (system) =>
-              system.attributes.can_send && system.attributes.can_receive
-          )
-          .map((system) => (
-            <div
-              key={system.id}
-              className="bg-white rounded-md p-4 shadow-md transition duration-300 ease-in-out transform hover:scale-105"
-            >
-              <Link href={`/systems/${system.id}`}>
-                <h2 className="text-lg font-semibold mb-2">
+        {currentItems.map((system) => (
+          <div
+            key={system.id}
+            className="bg-white rounded-md p-4 shadow-md transition duration-300 ease-in-out transform hover:scale-105 w-80 h-36"
+          >
+            <Link href={`/systems/${system.id}`}>
+              <div className="flex flex-col items-center mb-2">
+                <h2 className="text-lg font-semibold">
                   {system.attributes.name}
                 </h2>
-
-                <p className="text-gray-500">
-                  Currency: {system.attributes.currency}
-                </p>
-                <p className="text-gray-500">
-                  Can Send: {system.attributes.can_send.toString()}
-                </p>
-                <p className="text-gray-500">
-                  Can Receive: {system.attributes.can_receive.toString()}
-                </p>
-              </Link>
-            </div>
-          ))}
+                <Image
+                  src={system.imageUrl}
+                  alt={system.attributes.name}
+                  width={100}
+                  height={100}
+                  className="img"
+                />
+              </div>
+              <p className="text-gray-500 text-center">
+                Moneda: {system.attributes.currency}
+              </p>
+            </Link>
+          </div>
+        ))}
       </div>
       <div className="mt-4 flex justify-center">
         {Array.from({ length: totalPages }, (_, index) => (

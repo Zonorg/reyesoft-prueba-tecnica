@@ -11,6 +11,7 @@ export default function Navbar() {
             width={120}
             height={120}
             alt="Site logo"
+            className="h-auto"
           />
         </Link>
       </div>
