@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -16,6 +17,8 @@ interface System {
 export default function Page(): React.ReactElement {
   const router = useRouter();
   const [systems, setSystems] = useState<System[]>([]);
+
+  const [userName, setUserName] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 9;
 
@@ -25,6 +28,12 @@ export default function Page(): React.ReactElement {
     if (!userIsAuthenticated) {
       router.push("/login");
     } else {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        setUserName(user.name);
+      }
+
       const fetchData = async () => {
         try {
           const response = await fetch("https://api.saldo.com.ar/v3/systems");
@@ -53,7 +62,12 @@ export default function Page(): React.ReactElement {
   };
 
   return (
-    <div className="default-page-container">
+    <div className="default_page_container">
+      {userName && (
+        <div className="mb-4">
+          <p className="font-bold">{`Hola, ${userName}!`}</p>
+        </div>
+      )}
       <h1 className="text-2xl font-bold mb-4">Lista de Activos Disponibles</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {currentItems.map((system) => (
@@ -61,18 +75,21 @@ export default function Page(): React.ReactElement {
             key={system.id}
             className="bg-white rounded-md p-4 shadow-md transition duration-300 ease-in-out transform hover:scale-105"
           >
-            <h2 className="text-lg font-semibold mb-2">
-              {system.attributes.name}
-            </h2>
-            <p className="text-gray-500">
-              Currency: {system.attributes.currency}
-            </p>
-            <p className="text-gray-500">
-              Can Send: {system.attributes.can_send.toString()}
-            </p>
-            <p className="text-gray-500">
-              Can Receive: {system.attributes.can_receive.toString()}
-            </p>
+            <Link href={`/systems/${system.id}`}>
+              <h2 className="text-lg font-semibold mb-2">
+                {system.attributes.name}
+              </h2>
+
+              <p className="text-gray-500">
+                Currency: {system.attributes.currency}
+              </p>
+              <p className="text-gray-500">
+                Can Send: {system.attributes.can_send.toString()}
+              </p>
+              <p className="text-gray-500">
+                Can Receive: {system.attributes.can_receive.toString()}
+              </p>
+            </Link>
           </div>
         ))}
       </div>

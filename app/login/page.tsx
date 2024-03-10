@@ -61,7 +61,7 @@ export default function Page() {
   };
 
   return (
-    <div className="default-page-container">
+    <div className="default_page_container">
       <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
       <form className="max-w-md mx-auto my-8" onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -98,10 +98,10 @@ export default function Page() {
             required
           />
         </div>
-        <div className="mb-4">
+        <div className="mb-4 text-center">
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue"
+            className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue"
           >
             Iniciar Sesión
           </button>
