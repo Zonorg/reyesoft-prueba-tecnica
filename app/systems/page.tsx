@@ -141,7 +141,7 @@ export default function Systems(): React.ReactElement {
                 onClick={() => paginate(index + 1)}
                 className={`mx-2 px-3 py-1 ${
                   currentPage === index + 1
-                    ? "bg-blue-500 text-white"
+                    ? "bg-green-saldo text-white"
                     : "bg-gray-300 text-gray-700"
                 } rounded-full focus:outline-none`}
               >

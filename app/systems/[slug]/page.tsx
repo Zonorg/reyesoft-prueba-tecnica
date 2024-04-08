@@ -50,7 +50,7 @@ export default function idDetails(): React.ReactElement {
         setUserName(user.name);
       }
 
-        //Llamada a la api incluyendo los rates para poder hacer el calculo de divisas
+      //Llamada a la api incluyendo los rates para poder hacer el calculo de divisas
       const fetchData = async () => {
         try {
           const response = await fetch(
@@ -184,7 +184,7 @@ export default function idDetails(): React.ReactElement {
 
           <Link
             href="/systems"
-            className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue"
+            className="bg-green-saldo hover:bg-green-hover transition text-white py-2 px-4 rounded-md focus:outline-none focus:shadow-outline-blue"
           >
             Volver
           </Link>

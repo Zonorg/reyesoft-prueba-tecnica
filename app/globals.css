@@ -4,7 +4,7 @@
 
 :root {
   --foreground-hex: #333;
-  --background-hex: #fff;
+  --background-hex: #f9f9f9;
 }
 
 html,
@@ -16,8 +16,8 @@ body {
 }
 
 body {
-  color: rgb(var(--foreground-hex));
-  background-color: rgb(var(--background-hex));
+  color: var(--foreground-hex);
+  background-color: var(--background-hex);
   display: flex;
   flex-direction: column;
   align-items: center;
