@@ -19,7 +19,7 @@ interface SystemData {
   included: any[];
 }
 
-export default function idDetails(): React.ReactElement {
+export default function IdDetails(): React.ReactElement {
   // Para obtener el id de la query, normalmente se usa useRouter pero tuve que optar por pathname
   // Ya que mi proyecto se encuentra en app y Next no permite usar useRoute de ésta manera
   const pathname = usePathname();
