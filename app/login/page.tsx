@@ -75,7 +75,7 @@ export default function Login() {
       <div className="default_page_container bg-white shadow-md rounded rounded-md max-lg:w-2/3 max-md:w-full">
         <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
         <form
-          className="max-w-md mx-auto max-md:w-full "
+          className="max-w-md mx-auto max-md:w-full"
           onSubmit={handleSubmit}
         >
           <div className="mb-4">
@@ -91,6 +91,7 @@ export default function Login() {
               name="email"
               value={email}
               onChange={handleEmailChange}
+              placeholder="admin@saldo.com.ar"
               className="w-96 max-md:w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-saldo"
               required
             />
@@ -108,6 +109,7 @@ export default function Login() {
               name="password"
               value={password}
               onChange={handlePasswordChange}
+              placeholder="CoolSite"
               className="w-96 max-md:w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-saldo"
               required
             />
