@@ -1,4 +1,4 @@
-Calculadora de divisas
+## Calculadora de divisas
 
 Proyecto realizado con Next.js 14 y Tailwind CSS.
 
